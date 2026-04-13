@@ -11,7 +11,7 @@ const noblox = require("noblox.js");
 (async () => {
     try {
         const user = await noblox.setCookie(process.env.COOKIE);
-        console.log("Cookie válida, logueado como:", CurrentUser.UserName);
+        console.log("Cookie válida, logueado como:", currentUser.UserName);
     } catch (err) {
         console.error("COOKIE INVÁLIDA:", err);
     }
