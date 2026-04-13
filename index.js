@@ -70,13 +70,12 @@ app.post("/check-devote", async (req, res) => {
         const userId = await noblox.getIdFromUsername(username);
 
         // 🔍 Grupo
-        const groups = await noblox.getGroups(userId);
-        const groupData = groups.find(g => g.Id === GROUP_ID);
+const rank = await noblox.getRankInGroup(GROUP_ID, userId);
 
-        if (!groupData) {
-            delete devoteList[username];
-            return res.send("NOT_IN_GROUP");
-        }
+if (rank === 0) {
+    delete devoteList[username];
+    return res.send("NOT_IN_GROUP");
+}
 
         const currentRank = groupData.Rank;
 // 🚫 SEGURIDAD STAFF
