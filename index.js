@@ -46,6 +46,10 @@ app.get("/", (req, res) => {
     res.send("Arca System Online");
 });
 
+app.get("/verify", (req, res) => {
+    res.send("OK");
+});
+
 // 🔥 ENDPOINT
 app.post("/check-devote", async (req, res) => {
     const { username } = req.body;
