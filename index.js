@@ -50,6 +50,10 @@ app.get("/verify", (req, res) => {
     res.send("OK");
 });
 
+app.get("/check-devote", (req, res) => {
+    res.send("Endpoint activo");
+});
+
 // 🔥 ENDPOINT
 app.post("/check-devote", async (req, res) => {
     const { username } = req.body;
