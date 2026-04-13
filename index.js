@@ -1,26 +1,13 @@
-const { 
-    Client, 
-    GatewayIntentBits, 
-    REST, 
-    Routes, 
-    SlashCommandBuilder 
+const {
+    Client,
+    GatewayIntentBits,
+    REST,
+    Routes,
+    SlashCommandBuilder
 } = require("discord.js");
 
 const express = require("express");
 const noblox = require("noblox.js");
-
-(async () => {
-    try {
-        await noblox.setCookie(process.env.COOKIE);
-
-        const currentUser = await noblox.getCurrentUser();
-
-        console.log("Cookie válida, logueado como:", currentUser.UserName);
-
-    } catch (err) {
-        console.error("COOKIE INVÁLIDA:", err);
-    }
-})();
 
 // 🔑 CONFIG
 const TOKEN = process.env.TOKEN;
@@ -29,7 +16,7 @@ const VERIFIED_ROLE_NAME = "Verified";
 const DEVOTE_CHANNEL_ID = "1404343622941540444";
 
 // 👑 ROBLOX
-const GROUP_ID = "33627323";
+const GROUP_ID = 33627323;
 
 const RANKS = {
     registered: 2,
@@ -40,8 +27,6 @@ const GAMEPASS_ID = 685541051;
 
 const PUBLIC_CHANNEL_ID = "1163122428457799720";
 const LOG_CHANNEL_ID = "1404183947679891627";
-
-const ROBLOX_COOKIE = process.env.COOKIE;
 
 // 🤖 CLIENT
 const client = new Client({
@@ -82,24 +67,22 @@ app.post("/check-devote", async (req, res) => {
     try {
         const userId = await noblox.getIdFromUsername(username);
 
-        // 🔍 Grupo
-const rank = await noblox.getRankInGroup(GROUP_ID, userId);
+        const rank = await noblox.getRankInGroup(GROUP_ID, userId);
 
-if (rank === 0) {
-    delete devoteList[username];
-    return res.send("NOT_IN_GROUP");
-}
+        if (rank === 0) {
+            delete devoteList[username];
+            return res.send("NOT_IN_GROUP");
+        }
 
-        const currentRank = groupData.Rank;
-// 🚫 SEGURIDAD STAFF
-        if (currentRank > 3) {
+        // 🚫 SECURITY
+        if (rank > 3) {
             delete devoteList[username];
             return res.send("RANK_TOO_HIGH");
         }
 
-        // 🧠 GAMEPASS (solo rank 3)
+        // 🧠 GAMEPASS CHECK (insane)
         if (data.selectedRank === "insane") {
-            const ownsGamepass = await noblox.getPlayerAssetOwnership(userId, GAMEPASS_ID);
+            const ownsGamepass = await noblox.getOwnership(userId, GAMEPASS_ID);
 
             if (!ownsGamepass) {
                 delete devoteList[username];
@@ -112,14 +95,14 @@ if (rank === 0) {
         await noblox.setRank(GROUP_ID, userId, targetRank);
 
         console.log(`✅ ${username} rankeado a ${targetRank}`);
-// 📢 MENSAJE
+
+        // 📢 PUBLIC
         const publicChannel = client.channels.cache.get(PUBLIC_CHANNEL_ID);
         if (publicChannel) {
             publicChannel.send(
                 `<@${data.discordId}> has devoted themselves into our community! Please welcome them...`
             );
         }
-
 
         // 📜 LOG
         const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
@@ -133,16 +116,12 @@ if (rank === 0) {
         return res.send("SUCCESS");
 
     } catch (err) {
-        console.error(err);
+        console.error("DEVOTE ERROR:", err);
         return res.send("ERROR");
     }
 });
 
-app.listen(3000, () => {
-    console.log("Servidor activo");
-});
-
-// 🧩 COMANDO
+// 🧠 SLASH COMMAND
 const commands = [
     new SlashCommandBuilder()
         .setName("devote")
@@ -159,7 +138,6 @@ const commands = [
         .toJSON()
 ];
 
-// 🔄 REGISTER
 const rest = new REST({ version: "10" }).setToken(TOKEN);
 
 (async () => {
@@ -170,6 +148,7 @@ const rest = new REST({ version: "10" }).setToken(TOKEN);
 client.once("ready", () => {
     console.log(`Bot conectado como ${client.user.tag}`);
 });
+
 // 🎯 INTERACTION
 client.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
@@ -205,20 +184,32 @@ client.on("interactionCreate", async (interaction) => {
             expiresAt: Date.now() + 300000
         };
 
-        await interaction.reply({
-    content: `🎗️ **Arca** *awaits you here*, ***${username}...***
+        return interaction.reply({
+            content: `🎗️ **Arca** *awaits you here*, ***${username}...***
 
-🔗 __ https://www.roblox.com/games/15928047957/Ranking-Center __
+🔗 __ https://www.roblox.com/games/15928047957/Ranking-Center .__
 
 🧬 Selected Rank: ***${selectedRank === "registered" ? "✏️ Registered" : "🧠 Insane Voyager"}***`,
-    ephemeral: true
-});
+            ephemeral: true
+        });
     }
 });
 
-// 🔐 LOGIN
+// 🔐 LOGIN DISCORD
 client.login(TOKEN);
 
-noblox.setCookie(ROBLOX_COOKIE)
-.then(() => console.log("✅ Roblox conectado"))
-.catch(console.error);
+// 🤖 ROBLOX LOGIN (FIXED)
+(async () => {
+    try {
+        await noblox.setCookie(process.env.COOKIE);
+        const user = await noblox.getAuthenticatedUser();
+        console.log("Cookie válida, logueado como:", user.UserName);
+    } catch (err) {
+        console.error("COOKIE INVÁLIDA:", err);
+    }
+})();
+
+// 🌐 SERVER
+app.listen(3000, () => {
+    console.log("Servidor activo");
+});
