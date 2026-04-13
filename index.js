@@ -16,7 +16,7 @@ const VERIFIED_ROLE_NAME = "Verified";
 const DEVOTE_CHANNEL_ID = "1404343622941540444";
 
 // 👑 ROBLOX
-const GROUP_ID = 33627323;
+const GROUP_ID = "33627323";
 
 const RANKS = {
     registered: 2,
