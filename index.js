@@ -1,13 +1,3 @@
-const noblox = require("noblox.js");
-
-(async () => {
-    try {
-        const user = await noblox.setCookie(process.env.COOKIE);
-        console.log("Cookie válida, logueado como:", user.UserName);
-    } catch (err) {
-        console.error("COOKIE INVÁLIDA:", err);
-    }
-})();
 const { 
     Client, 
     GatewayIntentBits, 
@@ -18,6 +8,14 @@ const {
 
 const express = require("express");
 const noblox = require("noblox.js");
+(async () => {
+    try {
+        const user = await noblox.setCookie(process.env.COOKIE);
+        console.log("Cookie válida, logueado como:", user.UserName);
+    } catch (err) {
+        console.error("COOKIE INVÁLIDA:", err);
+    }
+})();
 
 // 🔑 CONFIG
 const TOKEN = process.env.TOKEN;
