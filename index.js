@@ -132,7 +132,7 @@ const commands = [
                 .setDescription("Choose your rank")
                 .setRequired(true)
                 .addChoices(
-                    { name: "Registered", value: "registered" },
+                    { name: "✏ Registered", value: "registered" },
                     { name: "🧠 Insane Voyager", value: "insane" }
                 )
         )
@@ -158,7 +158,7 @@ client.on("interactionCreate", async (interaction) => {
 
         if (interaction.channelId !== DEVOTE_CHANNEL_ID) {
             return interaction.reply({
-                content: "❌ Use the correct channel.",
+                content: "❌ Use the correct channel. __ https://discord.com/channels/993236791412932780/1404343622941540444 __",
                 ephemeral: true
             });
         }
