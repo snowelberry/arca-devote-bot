@@ -8,10 +8,15 @@ const {
 
 const express = require("express");
 const noblox = require("noblox.js");
+
 (async () => {
     try {
-        const user = await noblox.setCookie(process.env.COOKIE);
+        await noblox.setCookie(process.env.COOKIE);
+
+        const currentUser = await noblox.getCurrentUser();
+
         console.log("Cookie válida, logueado como:", currentUser.UserName);
+
     } catch (err) {
         console.error("COOKIE INVÁLIDA:", err);
     }
