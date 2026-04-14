@@ -1,4 +1,3 @@
-console.log("🔥 INDEX INICIADO");
 const {
     Client,
     GatewayIntentBits,
@@ -34,14 +33,14 @@ const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
 });
 
-// 🧠 REQUESTS
+// 🧠 DEVOTE MEMORY
 const devoteList = {};
 
-// 🧯 SAFE BOOT (evita crash silencioso)
+// 🧯 SAFE CRASH HANDLING
 process.on("uncaughtException", console.error);
 process.on("unhandledRejection", console.error);
 
-// 🌐 SERVER
+// 🌐 EXPRESS SERVER
 const app = express();
 app.use(express.json());
 
@@ -54,7 +53,7 @@ app.get("/verify", (req, res) => {
 });
 
 app.get("/check-devote", (req, res) => {
-    res.send("Endpoint active");
+    res.send("Endpoint activo");
 });
 
 // 🔥 DEVOTE ENDPOINT
@@ -144,18 +143,27 @@ const rest = new REST({ version: "10" }).setToken(TOKEN);
     await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
 })();
 
-// 🤖 READY
+// 🤖 READY (ORDEN CORRECTO SIN FREEZE)
 client.once("ready", async () => {
     console.log(`Bot conectado como ${client.user.tag}`);
 
     try {
-        await noblox.setCookie(process.env.COOKIE);
+        console.log("🔄 Conectando Roblox...");
+
+        const cookie = process.env.COOKIE;
+
+        if (!cookie) {
+            throw new Error("COOKIE no encontrada en ENV");
+        }
+
+        await noblox.setCookie(cookie);
+
         const user = await noblox.getAuthenticatedUser();
 
         console.log("Roblox conectado como:", user.UserName);
 
     } catch (err) {
-        console.error("COOKIE INVÁLIDA:", err);
+        console.error("❌ ERROR ROBLOX LOGIN:", err);
     }
 });
 
@@ -167,7 +175,7 @@ client.on("interactionCreate", async (interaction) => {
 
         if (interaction.channelId !== DEVOTE_CHANNEL_ID) {
             return interaction.reply({
-                content: "❌ Use the correct channel for run this command. __ https://discord.com/channels/993236791412932780/1404343622941540444 __",
+                content: "❌ Use the correct channel. __ https://discord.com/channels/993236791412932780/1404343622941540444 __",
                 ephemeral: true
             });
         }
@@ -206,9 +214,7 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 // 🔐 LOGIN DISCORD
-client.login(TOKEN)
-  .then(() => console.log("🔐 Discord login OK"))
-  .catch(err => console.error("❌ ERROR LOGIN DISCORD:", err));
+client.login(TOKEN);
 
 // 🌐 SERVER START
 app.listen(3000, () => {
