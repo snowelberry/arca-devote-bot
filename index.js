@@ -203,7 +203,7 @@ client.login(TOKEN);
     try {
         await noblox.setCookie(process.env.COOKIE);
         const user = await noblox.getAuthenticatedUser();
-        console.log("Cookie válida, logueado como:", currentUser.UserName);
+        console.log("Cookie válida, logueado como:", user.name || user.displayName || user.UserName);
     } catch (err) {
         console.error("COOKIE INVÁLIDA:", err);
     }
