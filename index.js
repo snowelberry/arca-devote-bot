@@ -36,6 +36,10 @@ const client = new Client({
 // 🧠 REQUESTS
 const devoteList = {};
 
+// 🧯 SAFE BOOT (evita crash silencioso)
+process.on("uncaughtException", console.error);
+process.on("unhandledRejection", console.error);
+
 // 🌐 SERVER
 const app = express();
 app.use(express.json());
@@ -49,10 +53,10 @@ app.get("/verify", (req, res) => {
 });
 
 app.get("/check-devote", (req, res) => {
-    res.send("Endpoint activo");
+    res.send("Endpoint active");
 });
 
-// 🔥 ENDPOINT
+// 🔥 DEVOTE ENDPOINT
 app.post("/check-devote", async (req, res) => {
     const { username } = req.body;
 
@@ -74,13 +78,11 @@ app.post("/check-devote", async (req, res) => {
             return res.send("NOT_IN_GROUP");
         }
 
-        // 🚫 SECURITY
         if (rank > 3) {
             delete devoteList[username];
             return res.send("RANK_TOO_HIGH");
         }
 
-        // 🧠 GAMEPASS CHECK (insane)
         if (data.selectedRank === "insane") {
             const ownsGamepass = await noblox.getOwnership(userId, GAMEPASS_ID);
 
@@ -90,13 +92,11 @@ app.post("/check-devote", async (req, res) => {
             }
         }
 
-        // 👑 RANK
         const targetRank = RANKS[data.selectedRank];
         await noblox.setRank(GROUP_ID, userId, targetRank);
 
         console.log(`✅ ${username} rankeado a ${targetRank}`);
 
-        // 📢 PUBLIC
         const publicChannel = client.channels.cache.get(PUBLIC_CHANNEL_ID);
         if (publicChannel) {
             publicChannel.send(
@@ -104,7 +104,6 @@ app.post("/check-devote", async (req, res) => {
             );
         }
 
-        // 📜 LOG
         const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
         if (logChannel) {
             logChannel.send(
@@ -121,7 +120,7 @@ app.post("/check-devote", async (req, res) => {
     }
 });
 
-// 🧠 SLASH COMMAND
+// 🚀 SLASH COMMAND
 const commands = [
     new SlashCommandBuilder()
         .setName("devote")
@@ -145,8 +144,18 @@ const rest = new REST({ version: "10" }).setToken(TOKEN);
 })();
 
 // 🤖 READY
-client.once("ready", () => {
+client.once("ready", async () => {
     console.log(`Bot conectado como ${client.user.tag}`);
+
+    try {
+        await noblox.setCookie(process.env.COOKIE);
+        const user = await noblox.getAuthenticatedUser();
+
+        console.log("Roblox conectado como:", user.UserName);
+
+    } catch (err) {
+        console.error("COOKIE INVÁLIDA:", err);
+    }
 });
 
 // 🎯 INTERACTION
@@ -157,7 +166,7 @@ client.on("interactionCreate", async (interaction) => {
 
         if (interaction.channelId !== DEVOTE_CHANNEL_ID) {
             return interaction.reply({
-                content: "❌ Use the correct channel. __ https://discord.com/channels/993236791412932780/1404343622941540444 __",
+                content: "❌ Use the correct channel for run this command. __ https://discord.com/channels/993236791412932780/1404343622941540444 __",
                 ephemeral: true
             });
         }
@@ -187,7 +196,7 @@ client.on("interactionCreate", async (interaction) => {
         return interaction.reply({
             content: `🎗️ **Arca** *awaits you here*, ***${username}...***
 
-🔗 __ https://www.roblox.com/games/15928047957/Ranking-Center .__
+🔗 __ https://www.roblox.com/games/15928047957/Ranking-Center __
 
 🧬 Selected Rank: ***${selectedRank === "registered" ? "✏️ Registered" : "🧠 Insane Voyager"}***`,
             ephemeral: true
@@ -198,18 +207,7 @@ client.on("interactionCreate", async (interaction) => {
 // 🔐 LOGIN DISCORD
 client.login(TOKEN);
 
-// 🤖 ROBLOX LOGIN (FIXED)
-(async () => {
-    try {
-        await noblox.setCookie(process.env.COOKIE);
-        const user = await noblox.getAuthenticatedUser();
-        console.log("Cookie válida, logueado como:", user.name || user.displayName || user.UserName);
-    } catch (err) {
-        console.error("COOKIE INVÁLIDA:", err);
-    }
-})();
-
-// 🌐 SERVER
+// 🌐 SERVER START
 app.listen(3000, () => {
     console.log("Servidor activo");
 });
