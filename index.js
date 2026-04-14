@@ -1,18 +1,13 @@
-const {
-    Client,
-    GatewayIntentBits,
-    REST,
-    Routes,
-    SlashCommandBuilder
+const { 
+    Client, 
+    GatewayIntentBits, 
+    REST, 
+    Routes, 
+    SlashCommandBuilder 
 } = require("discord.js");
 
 const express = require("express");
 const noblox = require("noblox.js");
-
-// 🔥 CLIENT (DEBE IR PRIMERO SIEMPRE)
-const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
-});
 
 // 🔑 CONFIG
 const TOKEN = process.env.TOKEN;
@@ -33,14 +28,17 @@ const GAMEPASS_ID = 685541051;
 const PUBLIC_CHANNEL_ID = "1163122428457799720";
 const LOG_CHANNEL_ID = "1404183947679891627";
 
-// 🧠 MEMORY
+const ROBLOX_COOKIE = process.env.COOKIE;
+
+// 🤖 CLIENT
+const client = new Client({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
+});
+
+// 🧠 REQUESTS
 const devoteList = {};
 
-// 🧯 SAFE ERRORS
-process.on("uncaughtException", console.error);
-process.on("unhandledRejection", console.error);
-
-// 🌐 EXPRESS
+// 🌐 SERVER
 const app = express();
 app.use(express.json());
 
@@ -48,15 +46,7 @@ app.get("/", (req, res) => {
     res.send("Arca System Online");
 });
 
-app.get("/verify", (req, res) => {
-    res.send("OK");
-});
-
-app.get("/check-devote", (req, res) => {
-    res.send("Endpoint activo");
-});
-
-// 🔥 DEVOTE ENDPOINT
+// 🔥 ENDPOINT
 app.post("/check-devote", async (req, res) => {
     const { username } = req.body;
 
@@ -71,20 +61,25 @@ app.post("/check-devote", async (req, res) => {
     try {
         const userId = await noblox.getIdFromUsername(username);
 
-        const rank = await noblox.getRankInGroup(GROUP_ID, userId);
+        // 🔍 Grupo
+        const groups = await noblox.getGroups(userId);
+        const groupData = groups.find(g => g.Id === GROUP_ID);
 
-        if (rank === 0) {
+        if (!groupData) {
             delete devoteList[username];
             return res.send("NOT_IN_GROUP");
         }
 
-        if (rank > 3) {
+        const currentRank = groupData.Rank;
+// 🚫 SEGURIDAD STAFF
+        if (currentRank > 3) {
             delete devoteList[username];
             return res.send("RANK_TOO_HIGH");
         }
 
+        // 🧠 GAMEPASS (solo rank 3)
         if (data.selectedRank === "insane") {
-            const ownsGamepass = await noblox.getOwnership(userId, GAMEPASS_ID);
+            const ownsGamepass = await noblox.getPlayerAssetOwnership(userId, GAMEPASS_ID);
 
             if (!ownsGamepass) {
                 delete devoteList[username];
@@ -92,11 +87,12 @@ app.post("/check-devote", async (req, res) => {
             }
         }
 
+        // 👑 RANK
         const targetRank = RANKS[data.selectedRank];
         await noblox.setRank(GROUP_ID, userId, targetRank);
 
         console.log(`✅ ${username} rankeado a ${targetRank}`);
-
+// 📢 MENSAJE
         const publicChannel = client.channels.cache.get(PUBLIC_CHANNEL_ID);
         if (publicChannel) {
             publicChannel.send(
@@ -104,6 +100,8 @@ app.post("/check-devote", async (req, res) => {
             );
         }
 
+
+        // 📜 LOG
         const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
         if (logChannel) {
             logChannel.send(
@@ -115,12 +113,16 @@ app.post("/check-devote", async (req, res) => {
         return res.send("SUCCESS");
 
     } catch (err) {
-        console.error("DEVOTE ERROR:", err);
+        console.error(err);
         return res.send("ERROR");
     }
 });
 
-// 🚀 SLASH COMMANDS
+app.listen(3000, () => {
+    console.log("Servidor activo");
+});
+
+// 🧩 COMANDO
 const commands = [
     new SlashCommandBuilder()
         .setName("devote")
@@ -130,54 +132,24 @@ const commands = [
                 .setDescription("Choose your rank")
                 .setRequired(true)
                 .addChoices(
-                    { name: "✏ Registered", value: "registered" },
+                    { name: "Registered", value: "registered" },
                     { name: "🧠 Insane Voyager", value: "insane" }
                 )
         )
         .toJSON()
 ];
 
+// 🔄 REGISTER
 const rest = new REST({ version: "10" }).setToken(TOKEN);
 
 (async () => {
     await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
 })();
 
-// 🔐 LOGIN DISCORD (SEGURO)
-(async () => {
-    try {
-        console.log("🔥 INDEX INICIADO");
-
-        await client.login(TOKEN);
-
-        console.log("🔐 Discord login OK");
-
-    } catch (err) {
-        console.error("❌ ERROR LOGIN DISCORD:", err);
-    }
-})();
-
-// 🤖 READY EVENT
+// 🤖 READY
 client.once("ready", () => {
     console.log(`Bot conectado como ${client.user.tag}`);
-
-    console.log("🔄 Conectando Roblox...");
-
-    noblox.setCookie(process.env.COOKIE)
-        .then(() => noblox.getAuthenticatedUser())
-        .then(user => {
-            console.log("Roblox conectado como:", user.UserName);
-        })
-        .catch(err => {
-            console.error("❌ ERROR ROBLOX LOGIN:", err);
-        });
 });
-
-// 🌐 SERVER START
-app.listen(3000, () => {
-    console.log("Servidor activo");
-});
-
 // 🎯 INTERACTION
 client.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
@@ -186,7 +158,7 @@ client.on("interactionCreate", async (interaction) => {
 
         if (interaction.channelId !== DEVOTE_CHANNEL_ID) {
             return interaction.reply({
-                content: "❌ Use the correct channel. __ https://discord.com/channels/993236791412932780/1404343622941540444 __",
+                content: "❌ Use the correct channel.",
                 ephemeral: true
             });
         }
@@ -213,13 +185,20 @@ client.on("interactionCreate", async (interaction) => {
             expiresAt: Date.now() + 300000
         };
 
-        return interaction.reply({
-            content: `🎗️ **Arca** *awaits you here*, ***${username}...***
+        await interaction.reply({
+    content: `🎗️ **Arca** *awaits you here*, ***${username}...***
 
 🔗 __ https://www.roblox.com/games/15928047957/Ranking-Center __
 
 🧬 Selected Rank: ***${selectedRank === "registered" ? "✏️ Registered" : "🧠 Insane Voyager"}***`,
-            ephemeral: true
-        });
+    ephemeral: true
+});
     }
 });
+
+// 🔐 LOGIN
+client.login(TOKEN);
+
+noblox.setCookie(ROBLOX_COOKIE)
+.then(() => console.log("✅ Roblox conectado"))
+.catch(console.error);
