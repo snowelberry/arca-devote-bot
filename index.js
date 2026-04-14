@@ -9,6 +9,11 @@ const {
 const express = require("express");
 const noblox = require("noblox.js");
 
+// 🔥 CLIENT (DEBE IR PRIMERO SIEMPRE)
+const client = new Client({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
+});
+
 // 🔑 CONFIG
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = "1492783349624733786";
@@ -31,11 +36,11 @@ const LOG_CHANNEL_ID = "1404183947679891627";
 // 🧠 MEMORY
 const devoteList = {};
 
-// 🧯 SAFE HANDLERS
+// 🧯 SAFE ERRORS
 process.on("uncaughtException", console.error);
 process.on("unhandledRejection", console.error);
 
-// 🌐 EXPRESS (SIEMPRE ARRIBA)
+// 🌐 EXPRESS
 const app = express();
 app.use(express.json());
 
@@ -48,7 +53,7 @@ app.get("/verify", (req, res) => {
 });
 
 app.get("/check-devote", (req, res) => {
-    res.send("Endpoint active");
+    res.send("Endpoint activo");
 });
 
 // 🔥 DEVOTE ENDPOINT
@@ -138,7 +143,7 @@ const rest = new REST({ version: "10" }).setToken(TOKEN);
     await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
 })();
 
-// 🔐 DISCORD LOGIN (ARRANQUE PRINCIPAL)
+// 🔐 LOGIN DISCORD (SEGURO)
 (async () => {
     try {
         console.log("🔥 INDEX INICIADO");
@@ -152,11 +157,7 @@ const rest = new REST({ version: "10" }).setToken(TOKEN);
     }
 })();
 
-// 🤖 CLIENT READY (AQUÍ VA ROBLOX)
-const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
-});
-
+// 🤖 READY EVENT
 client.once("ready", () => {
     console.log(`Bot conectado como ${client.user.tag}`);
 
@@ -172,7 +173,12 @@ client.once("ready", () => {
         });
 });
 
-// 🎯 INTERACTION (TU MENSAJE ORIGINAL INTACTO)
+// 🌐 SERVER START
+app.listen(3000, () => {
+    console.log("Servidor activo");
+});
+
+// 🎯 INTERACTION
 client.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
@@ -216,9 +222,4 @@ client.on("interactionCreate", async (interaction) => {
             ephemeral: true
         });
     }
-});
-
-// 🌐 SERVER START (AL FINAL)
-app.listen(3000, () => {
-    console.log("Servidor activo");
 });
