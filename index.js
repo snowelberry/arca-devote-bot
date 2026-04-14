@@ -1,4 +1,3 @@
-console.log("TOKEN EXIST:", !!process.env.TOKEN);
 const {
     Client,
     GatewayIntentBits,
@@ -29,19 +28,14 @@ const GAMEPASS_ID = 685541051;
 const PUBLIC_CHANNEL_ID = "1163122428457799720";
 const LOG_CHANNEL_ID = "1404183947679891627";
 
-// 🤖 CLIENT
-const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
-});
-
-// 🧠 DEVOTE MEMORY
+// 🧠 MEMORY
 const devoteList = {};
 
-// 🧯 SAFE CRASH HANDLING
+// 🧯 SAFE HANDLERS
 process.on("uncaughtException", console.error);
 process.on("unhandledRejection", console.error);
 
-// 🌐 EXPRESS SERVER
+// 🌐 EXPRESS (SIEMPRE ARRIBA)
 const app = express();
 app.use(express.json());
 
@@ -54,7 +48,7 @@ app.get("/verify", (req, res) => {
 });
 
 app.get("/check-devote", (req, res) => {
-    res.send("Endpoint activo");
+    res.send("Endpoint active");
 });
 
 // 🔥 DEVOTE ENDPOINT
@@ -121,7 +115,7 @@ app.post("/check-devote", async (req, res) => {
     }
 });
 
-// 🚀 SLASH COMMAND
+// 🚀 SLASH COMMANDS
 const commands = [
     new SlashCommandBuilder()
         .setName("devote")
@@ -144,31 +138,41 @@ const rest = new REST({ version: "10" }).setToken(TOKEN);
     await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
 })();
 
-// 🤖 READY (ORDEN CORRECTO SIN FREEZE)
-client.once("ready", async () => {
-    console.log(`Bot conectado como ${client.user.tag}`);
-
+// 🔐 DISCORD LOGIN (ARRANQUE PRINCIPAL)
+(async () => {
     try {
-        console.log("🔄 Conectando Roblox...");
+        console.log("🔥 INDEX INICIADO");
 
-        const cookie = process.env.COOKIE;
+        await client.login(TOKEN);
 
-        if (!cookie) {
-            throw new Error("COOKIE no encontrada en ENV");
-        }
-
-        await noblox.setCookie(cookie);
-
-        const user = await noblox.getAuthenticatedUser();
-
-        console.log("Roblox conectado como:", user.UserName);
+        console.log("🔐 Discord login OK");
 
     } catch (err) {
-        console.error("❌ ERROR ROBLOX LOGIN:", err);
+        console.error("❌ ERROR LOGIN DISCORD:", err);
     }
+})();
+
+// 🤖 CLIENT READY (AQUÍ VA ROBLOX)
+const client = new Client({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
 });
 
-// 🎯 INTERACTION
+client.once("ready", () => {
+    console.log(`Bot conectado como ${client.user.tag}`);
+
+    console.log("🔄 Conectando Roblox...");
+
+    noblox.setCookie(process.env.COOKIE)
+        .then(() => noblox.getAuthenticatedUser())
+        .then(user => {
+            console.log("Roblox conectado como:", user.UserName);
+        })
+        .catch(err => {
+            console.error("❌ ERROR ROBLOX LOGIN:", err);
+        });
+});
+
+// 🎯 INTERACTION (TU MENSAJE ORIGINAL INTACTO)
 client.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
@@ -214,12 +218,7 @@ client.on("interactionCreate", async (interaction) => {
     }
 });
 
-// 🔐 LOGIN DISCORD
-client.login(TOKEN)
-  .then(() => console.log("🔐 Discord login OK"))
-  .catch(err => console.error("❌ ERROR LOGIN DISCORD:", err));
-
-// 🌐 SERVER START
+// 🌐 SERVER START (AL FINAL)
 app.listen(3000, () => {
     console.log("Servidor activo");
 });
