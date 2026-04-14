@@ -10,7 +10,7 @@ const express = require("express");
 const noblox = require("noblox.js");
 
 // 🔑 CONFIG
-const TOKEN = process.env.TOKEN;
+const TOKEN = "MTQ5Mjc4MzM0OTYyNDczMzc4Ng.GXE84E.n2GkL22-QKgos25wVxyZT04bXatNNJHxIduPAo";
 const CLIENT_ID = "1492783349624733786";
 const VERIFIED_ROLE_NAME = "Verified";
 const DEVOTE_CHANNEL_ID = "1404343622941540444";
@@ -28,7 +28,7 @@ const GAMEPASS_ID = 685541051;
 const PUBLIC_CHANNEL_ID = "1163122428457799720";
 const LOG_CHANNEL_ID = "1404183947679891627";
 
-const ROBLOX_COOKIE = process.env.COOKIE;
+const ROBLOX_COOKIE = "_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|_CAEaAhADIhsKBGR1aWQSEzYxNDUyODQyNjc3ODcwNjU0OTAoBA.AERuB8qpcjIQqskZvf7H1_M7DNhaJ42_Y2DG9jEMP8EOj_2YN4S_DsPxcVyMdKuUwKMPzGl1r0uZiCA-AQFBQLrjlUgHAIARYYWLBb7fe9yF4b5kM42DY7WsdAq6ZtqzGyS3JcbAuPTGKqWfPQU_P9NzRK0INaFw_2KIBBC9-UQ1GrvzszXqnVw57E9yJQSiiGLCMr2Sd25ALTNEtAfRRVsOdqstlNx2_UPX-JB6pVvaGn5v24HLtaGHvCCYQTsiy1cfXZj0w4s0fvVpJiOZV201Xk6zosopnwybYllqfU3brqIY6EbIFbraW01iE1srbWALYOdTbg6exYgKTZh7RgzGGWp5avZxsTVp8Z35BICGls-3jTKgY-vqxVeTFSnbjZvsEdTfomLzADhmF9ogvjW-tJzdlt4TTUnAUJQb6l3R8wEOzZY2jOlt_FtzFeNAKFylQcg_VwO_rhv0cPNDzgoMS1Vrlc4yscADGBMpAHeM0gcxIXEJFyOMZZX8qsO0iiYgKo5cvZX5kdNdp994_TPvIWb5HyVYL8_G_reVeyh68Zsynt61S9LhK6pd9f-psA1YrgMnTHZZpjuowB_vjiCUuYEyKWtD9LrbTdJ3F5P_ld60jqsFj2ubrz7uIK12BzvBViD5dtR9wC13UhTnKbLBY-c05ZYYr-he1UKZTOKKzxs_u8UMBWsLF9wN2qi4uH2KbT0Gw9bG78EHYqwB5a8xJcJzmCBu7YRfz2bgyul2CAkwGP7MgH93NvyaJgwZkpTldvC4boh8Kap-Ub4bBpYFx9jnCD3ccG6qIGeEGDUm1Mo4uRIqCYqk2rplOY3CQruEJs4e2LfzRPtwxdnclvbBg2AdH28adyVmQKMB0QL03tglqrCagp8RVmdSehuuEWk4RLsF7gCg3aW7wdRM4NC5DBNgYKwxKxEZb6qFqAyJhc7BQ6GljQ002WSYIT7YX_vV_A";
 
 // 🤖 CLIENT
 const client = new Client({
@@ -132,7 +132,7 @@ const commands = [
                 .setDescription("Choose your rank")
                 .setRequired(true)
                 .addChoices(
-                    { name: "Registered", value: "registered" },
+                    { name: "📝Registered", value: "registered" },
                     { name: "🧠 Insane Voyager", value: "insane" }
                 )
         )
