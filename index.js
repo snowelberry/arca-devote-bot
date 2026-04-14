@@ -206,7 +206,9 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 // 🔐 LOGIN DISCORD
-client.login(TOKEN);
+client.login(TOKEN)
+  .then(() => console.log("🔐 Discord login OK"))
+  .catch(err => console.error("❌ ERROR LOGIN DISCORD:", err));
 
 // 🌐 SERVER START
 app.listen(3000, () => {
