@@ -1,3 +1,4 @@
+console.log("🔥 INDEX INICIADO");
 const {
     Client,
     GatewayIntentBits,
