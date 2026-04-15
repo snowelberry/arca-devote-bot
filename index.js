@@ -11,7 +11,7 @@ const noblox = require("noblox.js");
 
 // 🔑 CONFIG
 const TOKEN = process.env.TOKEN;
-const CLIENT_ID = "1492783349624733786";
+const CLIENT_ID = "1493797483824808137";
 const VERIFIED_ROLE_NAME = "Verified";
 const DEVOTE_CHANNEL_ID = "1404343622941540444";
 
