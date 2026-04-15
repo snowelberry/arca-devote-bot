@@ -1,4 +1,3 @@
-console.log("TOKEN:", TOKEN);
 const { 
     Client, 
     GatewayIntentBits, 
@@ -12,6 +11,10 @@ const noblox = require("noblox.js");
 
 // 🔑 CONFIG (AHORA DESDE RENDER)
 const TOKEN = process.env.TOKEN;
+const COOKIE = process.env.COOKIE;
+
+console.log("TOKEN EXISTE:", !!TOKEN);
+console.log("COOKIE EXISTE:", !!COOKIE);
 const CLIENT_ID = "1492783349624733786";
 const VERIFIED_ROLE_NAME = "Verified";
 const DEVOTE_CHANNEL_ID = "1404343622941540444";
@@ -29,7 +32,6 @@ const GAMEPASS_ID = 685541051;
 const PUBLIC_CHANNEL_ID = "1163122428457799720";
 const LOG_CHANNEL_ID = "1404183947679891627";
 
-const COOKIE = process.env.COOKIE;
 
 // 🤖 CLIENT
 const client = new Client({
