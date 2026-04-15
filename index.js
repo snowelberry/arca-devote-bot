@@ -10,7 +10,7 @@ const express = require("express");
 const noblox = require("noblox.js");
 
 // 🔑 CONFIG
-const TOKEN = process.env.TOKEN;
+const TOKEN = "MTQ5Mjc4MzM0OTYyNDczMzc4Ng";
 const CLIENT_ID = "1492783349624733786";
 const VERIFIED_ROLE_NAME = "Verified";
 const DEVOTE_CHANNEL_ID = "1404343622941540444";
@@ -27,7 +27,7 @@ const GAMEPASS_ID = 685541051;
 const PUBLIC_CHANNEL_ID = "1163122428457799720";
 const LOG_CHANNEL_ID = "1404183947679891627";
 
-const COOKIE = process.env.COOKIE;
+const COOKIE = "_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|_CAEaAhADIhsKBGR1aWQSEzYxNDUyODQyNjc3ODcwNjU0OTAoBA.Uic-4FiFnCaxuX9RgZZsH7VQeM7q_UBFvxt2k5yEl0CbCpTQeXBvg85Yw7eAmNCOX3dx8ZuKrrPz5lT_5SX3-UuRPbGTwMvScy9gJE6EH6gYvVxgcxS7rWU9MFYzihO8XuUwySIO6j9-AQQ3kv9L4QcXdFLioXfsOHfgbRN8ekgktzJiJe8yIs8sdJG8i6x6eMEG3xgh59Pf_LI0IcPjnIoXsAIMHe5dfvp5IHS6HSxUMvuDyvXkA0d8XV8x5nXcUayvAiwGkF07aYcrnd02JoUFeg64zcOTgA8XG8Qv3BkNH6Yog6AUitfS8t_bqm7nJO7k6hwvAen5xC8oAUnSzsIl2KuI7JYOPy_LLB03pRDrfpc4aEtmi16jaXjigeD-pGwS_LOVMFaEKVWcU3aS8-r94XNfnw09Si78-NvASpK05Lpul2IgBTjnN9TLiNR6LHTqIiO9KwB9y6dfcY6kuiqyfIbozPr6D0GNKFx8lrbTpoc05uLx_HNm-yy7smExmZkADPBBQIg-bFM19h9ivi87463QzzOsRutTpeOuUuJFQeV-89zytPHGxTePuhusrINVlkpOB9TxYSh9cV7PkZGD7zDLWf0zRN2R3-iJbs6fhWxjde50qd0wsxUxb-N4Xc2mP5A4vhzHhfSDhB6mmUX5vuLK70QxNTCvajLyAm3tY9zkFsGYgK0cabwEO_0mr8t8Jo83POtgqYSke3d8rZZfcRTyLSoV1QnF1WkPQ4avqzTkwpcEV_hjTPb6dNonuwby3imvhTpOfJe0ftFg-2nMJBMdvWUOPaRheQPnmosk_UOjTBCaocr4nSpdUOFfkPK7H8a4tv5Pk-OIgKXwA4YijRX-rhsQtG0b5TqNErhpej1Zis3InSoHMR_srMZ2MQnt251JVGd7vT-Rp-zl9rgt2aUMRyscEF40s2nmrH8iC_y35KcfbhTJv-vErhC0Xme52g";
 
 // 🤖 CLIENT
 const client = new Client({
