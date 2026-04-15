@@ -37,27 +37,6 @@ const client = new Client({
 // 🧠 REQUESTS
 const devoteList = {};
 
-// 🔐 LOGIN DISCORD (PRIMERO)
-client.login(TOKEN)
-.then(() => console.log("🔐 Discord login OK"))
-.catch(err => console.error("❌ ERROR LOGIN DISCORD:", err));
-
-// 🤖 READY
-client.once("ready", () => {
-    console.log(`Bot conectado como ${client.user.tag}`);
-});
-
-// 🔥 LOGIN ROBLOX (DESPUÉS)
-(async () => {
-    try {
-        await noblox.setCookie(COOKIE);
-        const user = await noblox.getCurrentUser();
-        console.log("✅ Roblox conectado como:", user.UserName);
-    } catch (err) {
-        console.error("❌ COOKIE ERROR:", err);
-    }
-})();
-
 // 🌐 SERVER
 const app = express();
 app.use(express.json());
@@ -70,7 +49,7 @@ app.get("/check-devote", (req, res) => {
     res.send("Endpoint activo");
 });
 
-// 🎮 ENDPOINT
+// 🎮 ENDPOINT ROBLOX
 app.post("/check-devote", async (req, res) => {
     const { username } = req.body;
 
@@ -133,6 +112,7 @@ app.post("/check-devote", async (req, res) => {
     }
 });
 
+// 🚀 SERVER START
 app.listen(3000, () => {
     console.log("🌐 Servidor activo");
 });
@@ -154,18 +134,28 @@ const commands = [
         .toJSON()
 ];
 
-// 🔄 REGISTER
+// 🔐 LOGIN DISCORD
+client.login(TOKEN)
+.then(() => console.log("🔐 Discord login OK"))
+.catch(err => console.error("❌ ERROR LOGIN DISCORD:", err));
+
+// 🤖 READY + REGISTER COMMANDS
 const rest = new REST({ version: "10" }).setToken(TOKEN);
 
-(async () => {
+client.once("ready", async () => {
+    console.log(`Bot conectado como ${client.user.tag}`);
+
     try {
         console.log("Registrando comandos...");
-        await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
+        await rest.put(
+            Routes.applicationCommands(CLIENT_ID),
+            { body: commands }
+        );
         console.log("Comandos registrados");
     } catch (err) {
-        console.error(err);
+        console.error("❌ ERROR REGISTRANDO:", err);
     }
-})();
+});
 
 // 🎯 INTERACTION
 client.on("interactionCreate", async (interaction) => {
@@ -212,3 +202,14 @@ client.on("interactionCreate", async (interaction) => {
         });
     }
 });
+
+// 🔥 LOGIN ROBLOX (AL FINAL)
+(async () => {
+    try {
+        await noblox.setCookie(COOKIE);
+        const user = await noblox.getCurrentUser();
+        console.log("✅ Roblox conectado como:", user.UserName);
+    } catch (err) {
+        console.error("❌ COOKIE ERROR:", err);
+    }
+})();
