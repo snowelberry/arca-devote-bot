@@ -35,7 +35,7 @@ const LOG_CHANNEL_ID = "1404183947679891627";
 
 // 🤖 CLIENT
 const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
+    intents: [GatewayIntentBits.Guilds]
 });
 
 // 🧠 REQUESTS
