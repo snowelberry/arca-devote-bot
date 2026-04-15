@@ -45,7 +45,7 @@ const devoteList = {};
 const app = express();
 app.use(express.json());
 
-// ROOT
+// ROOTT
 app.get("/", (req, res) => {
     res.send("Arca System Online");
 });
