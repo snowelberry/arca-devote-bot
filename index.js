@@ -9,8 +9,8 @@ const {
 const express = require("express");
 const noblox = require("noblox.js");
 
-// 🔑 CONFIG
-const TOKEN = "MTQ5Mjc4MzM0OTYyNDczMzc4Ng.GXE84E.n2GkL22-QKgos25wVxyZT04bXatNNJHxIduPAo";
+// 🔑 CONFIG (AHORA DESDE RENDER)
+const TOKEN = process.env.TOKEN;
 const CLIENT_ID = "1492783349624733786";
 const VERIFIED_ROLE_NAME = "Verified";
 const DEVOTE_CHANNEL_ID = "1404343622941540444";
@@ -28,7 +28,7 @@ const GAMEPASS_ID = 685541051;
 const PUBLIC_CHANNEL_ID = "1163122428457799720";
 const LOG_CHANNEL_ID = "1404183947679891627";
 
-const ROBLOX_COOKIE = "_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|_CAEaAhADIhsKBGR1aWQSEzYxNDUyODQyNjc3ODcwNjU0OTAoBA.AERuB8qpcjIQqskZvf7H1_M7DNhaJ42_Y2DG9jEMP8EOj_2YN4S_DsPxcVyMdKuUwKMPzGl1r0uZiCA-AQFBQLrjlUgHAIARYYWLBb7fe9yF4b5kM42DY7WsdAq6ZtqzGyS3JcbAuPTGKqWfPQU_P9NzRK0INaFw_2KIBBC9-UQ1GrvzszXqnVw57E9yJQSiiGLCMr2Sd25ALTNEtAfRRVsOdqstlNx2_UPX-JB6pVvaGn5v24HLtaGHvCCYQTsiy1cfXZj0w4s0fvVpJiOZV201Xk6zosopnwybYllqfU3brqIY6EbIFbraW01iE1srbWALYOdTbg6exYgKTZh7RgzGGWp5avZxsTVp8Z35BICGls-3jTKgY-vqxVeTFSnbjZvsEdTfomLzADhmF9ogvjW-tJzdlt4TTUnAUJQb6l3R8wEOzZY2jOlt_FtzFeNAKFylQcg_VwO_rhv0cPNDzgoMS1Vrlc4yscADGBMpAHeM0gcxIXEJFyOMZZX8qsO0iiYgKo5cvZX5kdNdp994_TPvIWb5HyVYL8_G_reVeyh68Zsynt61S9LhK6pd9f-psA1YrgMnTHZZpjuowB_vjiCUuYEyKWtD9LrbTdJ3F5P_ld60jqsFj2ubrz7uIK12BzvBViD5dtR9wC13UhTnKbLBY-c05ZYYr-he1UKZTOKKzxs_u8UMBWsLF9wN2qi4uH2KbT0Gw9bG78EHYqwB5a8xJcJzmCBu7YRfz2bgyul2CAkwGP7MgH93NvyaJgwZkpTldvC4boh8Kap-Ub4bBpYFx9jnCD3ccG6qIGeEGDUm1Mo4uRIqCYqk2rplOY3CQruEJs4e2LfzRPtwxdnclvbBg2AdH28adyVmQKMB0QL03tglqrCagp8RVmdSehuuEWk4RLsF7gCg3aW7wdRM4NC5DBNgYKwxKxEZb6qFqAyJhc7BQ6GljQ002WSYIT7YX_vV_A";
+const COOKIE = process.env.COOKIE;
 
 // 🤖 CLIENT
 const client = new Client({
@@ -42,13 +42,21 @@ const devoteList = {};
 const app = express();
 app.use(express.json());
 
+// ROOT
 app.get("/", (req, res) => {
     res.send("Arca System Online");
 });
 
-// 🔥 ENDPOINT
+// TEST
+app.get("/check-devote", (req, res) => {
+    res.send("Endpoint activo");
+});
+
+// 🔥 ENDPOINT REAL
 app.post("/check-devote", async (req, res) => {
     const { username } = req.body;
+
+    console.log("🔍 Username:", username);
 
     const data = devoteList[username];
     if (!data) return res.send("NOT_FOUND");
@@ -61,23 +69,21 @@ app.post("/check-devote", async (req, res) => {
     try {
         const userId = await noblox.getIdFromUsername(username);
 
-        // 🔍 Grupo
-        const groups = await noblox.getGroups(userId);
-        const groupData = groups.find(g => g.Id === GROUP_ID);
+        // ✅ GRUPO (FIX)
+        const rank = await noblox.getRankInGroup(GROUP_ID, userId);
 
-        if (!groupData) {
+        if (rank === 0) {
             delete devoteList[username];
             return res.send("NOT_IN_GROUP");
         }
 
-        const currentRank = groupData.Rank;
-// 🚫 SEGURIDAD STAFF
-        if (currentRank > 3) {
+        // 🚫 STAFF PROTECTION
+        if (rank > 3) {
             delete devoteList[username];
             return res.send("RANK_TOO_HIGH");
         }
 
-        // 🧠 GAMEPASS (solo rank 3)
+        // 🎟️ GAMEPASS
         if (data.selectedRank === "insane") {
             const ownsGamepass = await noblox.getPlayerAssetOwnership(userId, GAMEPASS_ID);
 
@@ -92,7 +98,8 @@ app.post("/check-devote", async (req, res) => {
         await noblox.setRank(GROUP_ID, userId, targetRank);
 
         console.log(`✅ ${username} rankeado a ${targetRank}`);
-// 📢 MENSAJE
+
+        // 📢 MENSAJE ORIGINAL
         const publicChannel = client.channels.cache.get(PUBLIC_CHANNEL_ID);
         if (publicChannel) {
             publicChannel.send(
@@ -100,8 +107,7 @@ app.post("/check-devote", async (req, res) => {
             );
         }
 
-
-        // 📜 LOG
+        // 📜 LOG ORIGINAL
         const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
         if (logChannel) {
             logChannel.send(
@@ -113,13 +119,14 @@ app.post("/check-devote", async (req, res) => {
         return res.send("SUCCESS");
 
     } catch (err) {
-        console.error(err);
+        console.error("❌ ERROR:", err);
         return res.send("ERROR");
     }
 });
 
+// 🚀 SERVER
 app.listen(3000, () => {
-    console.log("Servidor activo");
+    console.log("🌐 Servidor activo");
 });
 
 // 🧩 COMANDO
@@ -143,13 +150,20 @@ const commands = [
 const rest = new REST({ version: "10" }).setToken(TOKEN);
 
 (async () => {
-    await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
+    try {
+        console.log("Registrando comandos...");
+        await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
+        console.log("Comandos registrados");
+    } catch (err) {
+        console.error(err);
+    }
 })();
 
 // 🤖 READY
 client.once("ready", () => {
     console.log(`Bot conectado como ${client.user.tag}`);
 });
+
 // 🎯 INTERACTION
 client.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
@@ -158,7 +172,7 @@ client.on("interactionCreate", async (interaction) => {
 
         if (interaction.channelId !== DEVOTE_CHANNEL_ID) {
             return interaction.reply({
-                content: "❌ Use the correct channel.",
+                content: "❌ This channel should not be used to run this command; please run it in: **__ https://discord.com/channels/993236791412932780/1404343622941540444 __**",
                 ephemeral: true
             });
         }
@@ -185,20 +199,29 @@ client.on("interactionCreate", async (interaction) => {
             expiresAt: Date.now() + 300000
         };
 
+        console.log(`📌 Devote iniciado para: ${username}`);
+
         await interaction.reply({
-    content: `🎗️ **Arca** *awaits you here*, ***${username}...***
+            content: `🎗️ **Arca** *awaits you here*, ***${username}...***
 
 🔗 __ https://www.roblox.com/games/15928047957/Ranking-Center __
 
 🧬 Selected Rank: ***${selectedRank === "registered" ? "✏️ Registered" : "🧠 Insane Voyager"}***`,
-    ephemeral: true
-});
+            ephemeral: true
+        });
     }
 });
 
 // 🔐 LOGIN
 client.login(TOKEN);
 
-noblox.setCookie(ROBLOX_COOKIE)
-.then(() => console.log("✅ Roblox conectado"))
-.catch(console.error);
+// 🔥 ROBLOX LOGIN (FIX)
+(async () => {
+    try {
+        await noblox.setCookie(COOKIE);
+        const user = await noblox.getCurrentUser();
+        console.log("✅ Roblox conectado como:", user.UserName);
+    } catch (err) {
+        console.error("❌ COOKIE ERROR:", err);
+    }
+})();
