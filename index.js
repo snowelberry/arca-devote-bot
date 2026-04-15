@@ -10,7 +10,7 @@ const express = require("express");
 const noblox = require("noblox.js");
 
 // 🔑 CONFIG
-const TOKEN = "MTQ5Mjc4MzM0OTYyNDczMzc4Ng";
+const TOKEN = "MTQ5Mjc4MzM0OTYyNDczMzc4Ng.GhQbXB.lgZCiy4Q93bOc_Iiy-zSuIee1-1Zlh0-v_2qok";
 const CLIENT_ID = "1492783349624733786";
 const VERIFIED_ROLE_NAME = "Verified";
 const DEVOTE_CHANNEL_ID = "1404343622941540444";
