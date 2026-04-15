@@ -11,7 +11,7 @@ const noblox = require("noblox.js");
 
 // 🔑 CONFIG
 const TOKEN = process.env.TOKEN;
-const CLIENT_ID = "1493797483824808137";
+const CLIENT_ID = "1492783349624733786";
 const VERIFIED_ROLE_NAME = "Verified";
 const DEVOTE_CHANNEL_ID = "1404343622941540444";
 
@@ -87,7 +87,7 @@ app.post("/check-devote", async (req, res) => {
         const targetRank = RANKS[data.selectedRank];
         await noblox.setRank(GROUP_ID, userId, targetRank);
 
-        // 📢 MENSAJE ORIGINAL
+        // 📢 MENSAJE
         const publicChannel = client.channels.cache.get(PUBLIC_CHANNEL_ID);
         if (publicChannel) {
             publicChannel.send(
@@ -95,7 +95,7 @@ app.post("/check-devote", async (req, res) => {
             );
         }
 
-        // 📜 LOG ORIGINAL
+        // 📜 LOG
         const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
         if (logChannel) {
             logChannel.send(
@@ -112,7 +112,7 @@ app.post("/check-devote", async (req, res) => {
     }
 });
 
-// 🚀 SERVER START (CORREGIDO)
+// 🚀 SERVER START
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
@@ -141,7 +141,7 @@ client.login(TOKEN)
 .then(() => console.log("🔐 Discord login OK"))
 .catch(err => console.error("❌ ERROR LOGIN DISCORD:", err));
 
-// 🤖 READY + REGISTER COMMANDS
+// 🤖 READY + REGISTER
 const rest = new REST({ version: "10" }).setToken(TOKEN);
 
 client.once("ready", async () => {
@@ -205,7 +205,7 @@ client.on("interactionCreate", async (interaction) => {
     }
 });
 
-// 🔥 LOGIN ROBLOX (AL FINAL)
+// 🔥 ROBLOX LOGIN
 (async () => {
     try {
         await noblox.setCookie(COOKIE);
