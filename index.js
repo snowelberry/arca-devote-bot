@@ -1,3 +1,4 @@
+console.log("TOKEN:", TOKEN);
 const { 
     Client, 
     GatewayIntentBits, 
